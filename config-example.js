@@ -1,18 +1,18 @@
 // The Server IP should be in exports.server and the port should be in exports.port
-exports.server = '';
+exports.server = '107.161.19.92';
 exports.port = 8000;
 
 // The Server ID. Example for play.pokemonshowdown.com the server id will be "showdown"
-exports.serverid = '';
+exports.serverid = 'infinite';
 
 
 // The Bots name should go in exports.nick and password in exports.pass
-exports.nick = '';
-exports.pass = '';
+exports.nick = '1nside';
+exports.pass = 'botofinferno';
 
 
 // The rooms that should be joined. Joining Pokemon Showdown's Lobby isnt allowed at all..
-exports.rooms = ['The Inferno League'];
+exports.rooms = ['The Razor League','The Inferno League'];
 
 
 // Any private rooms that should be joined.
