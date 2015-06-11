@@ -8,16 +8,17 @@ const MESSAGES_TIME_OUT = 7 * 24 * 60 * 60 * 1000;
 var http = require('http');
 var sys = require('sys');
 
-//A Game of Trivia. Still a bit buggy but works fine 
-var triviaON = false;
-var triviaRoom;
-var triviaTimer;
-var triviaA;
-var triviaQ;
-var triviaPoints = [];
-var triviaQuestions = ['This Pokemon helps Nurse Joy in Pokemon Center and also have highest HP stat', 'blissey', 'What is the ability of Charizard Mega - X', 'toughclaws', 'A two turn move which starts with the absorbtion of sunlight', 'solarbeam','Its the only Dark Type Pulsating Move','darkpulse','Which colors are Raichu\'s Cheeks?','Yellow','Pokemon having Rock type and SandStorm as his/her Ability','Tyranitar','What ability boosts the power of Fire-type moves when the Pokemon is below 1/3 of its health?','blaze', 'What is the subtitle of the first Pokémon movie?','mewtwostrikesback','Name a move that can have a 100% chance of flinching the target barring Fake Out.','fling','What is the only Poison-Type Pokemon to learn Rock Polish?','garbodor','What cave lies between Mahogany Town and Blackthorn City?','icepath','This Electric-Type move increases the user\'s Special Defense.','charge','What is the only Pokémon available in the Yellow Forest Pokéwalker route?','pikachu','This is the nickname of the Pokemon acting as the light source of Glitter Lighthouse in Olivine City.','amphy','This Pokemon has the longest cry.','jynx','This Pokemon Conquest warlord has the warrior ability of "chesto!" at rank 2.','yoshihiro',
-'What Pokemon is based on the mythological kitsune?','ninetales'
-];
+//Bug Fixes in trivia....maybe??
+
+var triviaSign = false;
+var triviaroom;
+var triviatime;
+var triviaanswer;
+var triviaques;
+var triviapoints = []; // This empty array stores the points for trivia gained by users
+var triviaQuestions = ['This Pokemon apperead in the Sky of Unova region when Ash first landed there','zekrom'
+
+];   // Add questions in the space provided :D 
 
 
 exports.commands = {
@@ -28,7 +29,7 @@ exports.commands = {
 	 */
 	about: function (arg, by, room) {
 		var text = this.hasRank(by, '#&~') || room.charAt(0) === ',' ? '' : '/pm ' + by + ', ';
-		this.say(room, text + "**The Inferno League Bot** by 1love 1life forked from PS bot by SirDonovan,TalkTakesTime,Quinella and Morfent");
+		this.say(room, text + "The Inferno League bot **1nside** coded by 1love 1life and scpinion forked from PS bot by TalkTakesTime");
 	},
 	help: 'guide',
 	guide: function (arg, by, room) {
@@ -36,27 +37,21 @@ exports.commands = {
 		if (config.botguide) {
 			text += 'A guide on how to use this bot can be found here: ' + config.botguide;
 		} else {
-			text += 'There is no guide for this bot. PM the bot\'s owner with any questions.';
+			text += 'There is no guide for this bot. PM 1love 1life for any questions related to Bot';
 		}
 		this.say(room, text);
 	},
 
-	/**
-	 * Dev commands
-	 *
-	 * These commands are here for highly ranked users (or the creator) to use
-	 * to perform arbitrary actions that can't be done through any other commands
-	 * or to help with upkeep of the bot.
-	 */
+	/** These are the commands which can be used by high ranked user although u can make it to be used for regular users also
+	  but i will not advise it :p **/
 
 	reload: function (arg, by, room) {
 		if (config.excepts.indexOf(toId(by)) === -1)  
-			if(!this.hasRank(by , '+%@&#~')) return false;
+			if(!this.hasRank(by , '#~')) return false;
 		try {
 			this.uncacheTree('./commands.js');
 			Commands = require('./commands.js').commands;
-			this.say(room, '**Reloading........**');
-			this.say(room, 'Done reloading. All Commands are now up to date');
+			this.say(room, 'Commands reloaded and are now up to date');
 			console.log(by + ' reloaded the bot.');
 		} catch (e) {
 			error('failed to reload: ' + sys.inspect(e));
@@ -64,11 +59,7 @@ exports.commands = {
 	},
 	custom: function(arg, by, room) {
 		if (!this.hasRank(by, '#~')) return false;
-		// Custom commands can be executed in an arbitrary room using the syntax
-		// ".custom [room] command", e.g., to do !data pikachu in the room lobby,
-		// the command would be ".custom [lobby] !data pikachu". However, using
-		// "[" and "]" in the custom command to be executed can mess this up, so
-		// be careful with them.
+		
 		if (arg.indexOf('[') === 0 && arg.indexOf(']') > -1) {
 			var tarRoom = arg.slice(1, arg.indexOf(']'));
 			arg = arg.substr(arg.indexOf(']') + 1).trim();
@@ -93,7 +84,7 @@ exports.commands = {
 		}
 	},
 	uptime: function (arg, by, room) {
-		var text = config.excepts.indexOf(toId(by)) < 0 ? '**Uptime:** ' : '**Uptime:** ';
+		var text = config.excepts.indexOf(toId(by)) < 0 ? '**Uptime of Bot:** ' : '**Uptime of Bot:** ';
 		var divisors = [52, 7, 24, 60, 60];
 		var units = ['week', 'day', 'hour', 'minute', 'second'];
 		var buffer = [];
@@ -725,7 +716,7 @@ exports.commands = {
 	
 	// Tournament command. Add tiers you want and ENJOY!!!
 	tour: function(arg, by, room) {
-		if (config.serverid !== 'frost' && room !== 'theinfernoleague'
+		if (config.serverid !== 'eos' && room !== 'theinfernoleague'
 				&& room.charAt(0) !== ',' && config.members.map(toId).indexOf(toId(by)) < 0) return false;
 		if (room.charAt(0) === ',') room = 'theinfernoleague';
 	
@@ -785,7 +776,7 @@ exports.commands = {
 		var text = 'Points so far: '
 		for (var i = 0; i < triviaPoints.length; i++){
 			text += '' + triviaPoints[i] + ': ';
-			text += triviaPoints[i + 1] + ' points, ';
+			text += '**'triviaPoints[i + 1] + '** points, ';
 			i++
 		}
 		this.say(room, text);
@@ -793,54 +784,55 @@ exports.commands = {
         trivia: function(arg, by, room){
 		if(room.charAt(',') === 0)return false;
 		if(!this.hasRank(by, '%@#~')) return false;
-		if(triviaON){this.say( room, 'A trivia game cannot be started, as it is going on in another room.'); return false;}
-		triviaON = true;
+		if(triviaON){this.say( room, '**ERROR**: A trivia game cannot be started, as it is going on in another room.'); return false;}
+		triviaSign = true;
 		triviaRoom = room;
-                triviaA = '';
-		triviaPoints = [];
-		this.say( room, 'Hosting a game of trivia\. First to 10 points wins!  use \.ta or \.triviaanswer to submit your answer\.');
-		triviaTimer = setInterval( function() {
-                        if(triviaA){this.say(room, 'The correct answer was ' + triviaA);}
+                triviaans = '';
+		triviapoints = [];
+		this.say( room, '/wall Hosting a game of **Pokemon Trivia** First to 10 points wins!  use \.ta or \.triviaanswer to submit your answer\. First user to get **10** Points will win the Game. GOOD LUCK');
+		triviatime = setInterval( function() {
+                        if(triviaans){this.say(room, '**TIMES UP**);}
 			var TQN = 2*(Math.floor(triviaQuestions.length*Math.random()/2))
-			triviaQ = triviaQuestions[TQN];
-			triviaA = triviaQuestions[TQN+ 1];
-			this.say( room, 'Question: __' + triviaQ + '__'); 
+			triviaques = triviaQuestions[TQN];
+			triviaans = triviaQuestions[TQN+ 1];
+			this.say( room, '**Question**: ' + triviaQ ); 
 		}.bind(this), 17000);
 		
 	},
 	ta: 'triviaanswer',
 	triviaanswer: function(arg, by, room){
-		if(room !== triviaRoom) return false;
+		if(room !== triviaroom) return false;
 		if (!arg) return false;
 		arg = toId(arg);
 		var user = toId(by);
-	//	this.say(room, arg + ' answer: ' + triviaA);
-		if(arg === triviaA){
-			if (triviaPoints.indexOf(user) > -1){
+
+		if(arg === triviaans){
+			if (triviapoints.indexOf(user) > -1){
 				triviaA = '';
-				triviaPoints[triviaPoints.indexOf(user) + 1] = triviaPoints[triviaPoints.indexOf(user) + 1] + 1;
-				if (triviaPoints[triviaPoints.indexOf(user) + 1] >= 10) {
-					clearInterval(triviaTimer);
-					this.say( room, 'Congrats to ' + by + ' for winning!');
-					triviaON = false;
+				triviapoints[triviapoints.indexOf(user) + 1] = triviapoints[triviapoints.indexOf(user) + 1] + 1;
+				if (triviapoints[triviapoints.indexOf(user) + 1] >= 10) {
+					clearInterval(triviatime);
+					this.say( room, '/wall **Congratulations** to **' + by + '** for winning the game of Pokemon Trivia!');
+					this.say(room,'/wall You have been awarded with 5 Points and your scores have been recorded. You can check your score in next Bot Update');
+					triviaSign = false;
 					return false;
 				}
-				this.say(room, '' + by.slice(1, by.length) + ' got the right answer, and has ' + triviaPoints[triviaPoints.indexOf(user) + 1] + ' points!');
+				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer and advances to **' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** points!');
 			} else {
 				triviaA = '';
-				triviaPoints[triviaPoints.length] = user;
-				triviaPoints[triviaPoints.length] = 1;
-				this.say(room, '' + by.slice(1, by.length) + ' got the right answer, and has ' + triviaPoints[triviaPoints.indexOf(user) + 1] + ' point!');
+				triviapoints[triviapoints.length] = user;
+				triviapoints[triviapoints.length] = 1;
+				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer and advances to **' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** point!');
 			}
 		}
 	},
 	triviaend: function(arg, by, room){
-		if(room !== triviaRoom)return false;
-		if(!triviaON) return false;
+		if(room !== triviaroom)return false;
+		if(!triviaSign) return false;
 		if(!this.hasRank(by, '%@#~'))return false;
 		clearInterval(triviaTimer);
-		this.say(room, 'The game of trivia has been ended.');
-		triviaON = false;
+		this.say(room, 'The game of Pokemon trivia has been ended.');
+		triviaSign = false;
 	},
 };
 
