@@ -364,7 +364,7 @@ exports.parse = {
 				for (var i = 0; i < bannedPhrases.length; i++) {
 					if (msg.toLowerCase().indexOf(bannedPhrases[i]) > -1) {
 						pointVal = 2;
-						muteMessage = ', Automated response: your message contained a banned phrase';
+						muteMessage = ', This is an Automatic Response: Your Message contained a banned phrase. Kindly beware of the Banned Phrases in the room';
 						break;
 					}
 				}
@@ -377,7 +377,7 @@ exports.parse = {
 			if ((useDefault || !('flooding' in modSettings)) && isFlooding) {
 				if (pointVal < 2) {
 					pointVal = 2;
-					muteMessage = ', Do not flood the chat please';
+					muteMessage = ',Please Do not Flood the Chat';
 				}
 			}
 			// moderation for caps (over x% of the letters in a line of y characters are capital)
@@ -385,7 +385,7 @@ exports.parse = {
 			if ((useDefault || !('caps' in modSettings)) && capsMatch && toId(msg).length > MIN_CAPS_LENGTH && (capsMatch.length >= ~~(toId(msg).length * MIN_CAPS_PROPORTION))) {
 				if (pointVal < 1) {
 					pointVal = 1;
-					muteMessage = ', Do not abuse caps please';
+					muteMessage = ', Please do not abuse CAPS';
 				}
 			}
 			// moderation for stretching (over x consecutive characters in the message are the same)
@@ -393,7 +393,7 @@ exports.parse = {
 			if ((useDefault || !('stretching' in modSettings)) && stretchMatch) {
 				if (pointVal < 1) {
 					pointVal = 1;
-					muteMessage = ', Do not excessively repeat characters';
+					muteMessage = ', Plase do not excessively repeat characters';
 				}
 			}
 
