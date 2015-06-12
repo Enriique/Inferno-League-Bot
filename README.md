@@ -23,9 +23,13 @@ Bot Commands
 **********************************************************************************************
 
 Bot contain several commands which are useful and which are not very useful
+
 Use .ab and .unab to ban or unban users
+
 .reload to reload all newly added commands
+
 .trivia for starting a game of trivia
+
 .triviaend for ending game of trivia
 
 Well these are all useful commands...
