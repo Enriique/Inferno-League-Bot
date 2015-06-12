@@ -36,6 +36,10 @@ Well these are all useful commands...
 Credits
 **********************************************************
 1) 1love 1life - Owner
-2) Scpnion - Owner ( Development of Tournament commands )
+
+
+2) Scpinion - Owner ( Development of Tournament commands )
+
+
 3) TalkTakesTimes , Quinella and Morfent ( Original Bot Codes )
 
