@@ -1,24 +1,23 @@
-/**
- * This is the file where the bot commands are located
- *
- * @license MIT license
- */
+/**general files  of Bot. Some are useful and some are less useful 
+ * 
+ * MIT License **/
+
+
 const MESSAGES_TIME_OUT = 7 * 24 * 60 * 60 * 1000;
 
 var http = require('http');
 var sys = require('sys');
 
-//Bug Fixes in trivia....maybe??
+//needed object and variables for the game of trivia
 
-var triviaSign = false;
-var triviaroom;
-var triviatime;
-var triviaanswer;
-var triviaques;
-var triviapoints = []; // This empty array stores the points for trivia gained by users
-var triviaQuestions = ['This Pokemon apperead in the Sky of Unova region when Ash first landed there','zekrom'
-
-];   // Add questions in the space provided :D 
+var triviaQuestions = [ 
+	];  // The questions for trivia goes inside this Object.
+var triviaRoom; // This var will check if trivia is going in other room or not..
+var triviaON = false; // A switch case to tell if trivia is going on not
+var triviaTimer; // Keeps the track of the timer of the trivia
+var triviaA; // The answer of the trivia
+var triviaQ; // Question of trivia
+var triviaPoints = []; // This empty object will keep the track off all the trivia points during a game of trivia
 
 
 exports.commands = {
@@ -571,38 +570,6 @@ exports.commands = {
 		this.say(room, text + '**Inferno Ubers division(Blaze)**: ');
 	},
 
-//Trying to Fix this command a bit. A bit buggy but works fine
-	announce: function (arg, by, room) {
-		if (!this.hasRank(by, '%@#&~')) return false;
-		arg = toId(arg);
-		if (arg === 'off') {
-			if (this.buzzer) clearInterval(this.buzzer);
-			return this.say(room, 'Announcements have been disabled.');
-		} else if (arg === 'on') {
-			var self = this;
-			this.buzzer = setInterval(function() {
-				var tips = ["Don't forget to allow people to comment on your work when it's done! Click 'Share', and set permissions accordingly.",
-					"We like to play writing games, too! Click 'Activities' in our room introduction (the fancy box you saw when you joined) to see what games are available!",
-					"Looking for feedback? Ask writers for an R/R, or a 'review for review'. It's a win-win for both parties!",
-					"Questions on the (+) voice rank? Read our Voice Guidelines at http://bit.do/pswritingvoiceguidlines for more information.",
-					"Confused as to the time? Wanting to punch timezones in the face? Look no further, for I have a fancy ``time`` command! Try it out!",
-					"Would you like to host your work on our cloud drive? Ask a staff member about getting your own folder!",
-					"Be sure to keep your work's presentation up to par, or AxeBane will hunt you down! Or, you could ask one of our staff to take a look and check it for you, but that's boring.",
-					"Hey, you. Yes, you! Do __you__ want to improve the room? If you answered 'no', then go sit in the naughty corner. If you said 'yes', on the other hand, then go ahead and click the shiny 'submit and idea' button in the roominto!",
-					"Want to play a writing game? Ask one of our friendly staff to host one, or if you think you're up to it, try hosting yourself! It's a great way to gain a good reputation!",
-					"Every week we hold a Pokemon Showdown! Sunday Scribing contest. Participants are to write a story or a poem, depending on which week it is, based on the topic announced on Saturday. They have the whole of Sunday to write it. For more info, visit http://goo.gl/Ay6U5N",
-					"Today's Word of the Day is: " + this.settings.wotd.word + ". Its definition is: " + this.settings.wotd.definition,
-					"Need help getting started on a story? Try out the ``;idea`` command! Or, if you need to be a little more specific, try things like ``;randchar`` or ``;randscene``. You'll be writing in no time!",
-					"Did you know that we have an official place to share music? It's a great place to listen to something whilst writing, perhaps even gaining some inspiration! Of course, you could also just hang out there and chat. Interested? Good! Head on over to https://plug.dj/pokemon-showdown-writing-room",
-					"Need a quick way to access our Community Drive? Type ``;drive``!",
-					"Psst... You. Yeah, you! Did you know that you can send messages to your scribing buddies just by using the ``;mail`` command? It works, even when they're offline! :o",
-					"Need some love? Try using the ``esupport`` command. I promise I won't bite. <3"
-				];
-				var num = Math.floor((Math.random() * tips.length));
-				self.say(room, tips[num]);
-			}, 60*60*1000);
-		}
-	},
 
 // Mail related commands. Good commands because it also work when user is offline
 
@@ -769,73 +736,73 @@ exports.commands = {
 		}
 	},
 	
-	//Trivia commands are HERE :D
+ trivia: function(arg, by, room){
+		if(room.charAt(',') === 0)return false;
+		if(!this.hasRank(by, '%@#~')) return false;
+		if(triviaON){this.say( room, '**ERROR**: A game of trivia is going on another room and hence it cannot be started here'); return false;}
+		triviaON = true;
+		triviaRoom = room;
+                triviaA = '';
+		triviaPoints = [];
+		this.say( room, '/wall Hosting a game of **Pokemon Trivia**. Answer the questions using .ta or .triviaanswer. First player getting **10** points will win the game');
+		triviaTimer = setInterval( function() {
+                        if(triviaA){this.say(room, '**BEEP** TIMES UP!!' + triviaA);}
+			var TQN = 2*(Math.floor(triviaQuestions.length*Math.random()/2))
+			triviaQ = triviaQuestions[TQN];
+			triviaA = triviaQuestions[TQN+ 1];
+			this.say( room, '**Question**: ' + triviaQ); 
+		}.bind(this), 17000);
+		
+	},
 	triviapoints: function(arg, by, room){
 		if(!triviaON) return false;
 		if(!this.hasRank(by, '%#@~'))return false;
-		var text = 'Points so far: '
+		var text = '**Points so far**: '
 		for (var i = 0; i < triviaPoints.length; i++){
 			text += '' + triviaPoints[i] + ': ';
-			text += '**'triviaPoints[i + 1] + '** points, ';
+			text += triviaPoints[i + 1] + ' points, ';
 			i++
 		}
 		this.say(room, text);
 	},
-        trivia: function(arg, by, room){
-		if(room.charAt(',') === 0)return false;
-		if(!this.hasRank(by, '%@#~')) return false;
-		if(triviaON){this.say( room, '**ERROR**: A trivia game cannot be started, as it is going on in another room.'); return false;}
-		triviaSign = true;
-		triviaRoom = room;
-                triviaans = '';
-		triviapoints = [];
-		this.say( room, '/wall Hosting a game of **Pokemon Trivia** First to 10 points wins!  use \.ta or \.triviaanswer to submit your answer\. First user to get **10** Points will win the Game. GOOD LUCK');
-		triviatime = setInterval( function() {
-                        if(triviaans){this.say(room, '**TIMES UP**);}
-			var TQN = 2*(Math.floor(triviaQuestions.length*Math.random()/2))
-			triviaques = triviaQuestions[TQN];
-			triviaans = triviaQuestions[TQN+ 1];
-			this.say( room, '**Question**: ' + triviaQ ); 
-		}.bind(this), 17000);
-		
-	},
 	ta: 'triviaanswer',
 	triviaanswer: function(arg, by, room){
-		if(room !== triviaroom) return false;
+		if(room !== triviaRoom) return false;
 		if (!arg) return false;
-		arg = toId(arg);
+		if(!toID(arg)) return false
+		
 		var user = toId(by);
-
-		if(arg === triviaans){
-			if (triviapoints.indexOf(user) > -1){
+		if(arg === triviaA){
+			if (triviaPoints.indexOf(user) > -1){
 				triviaA = '';
-				triviapoints[triviapoints.indexOf(user) + 1] = triviapoints[triviapoints.indexOf(user) + 1] + 1;
-				if (triviapoints[triviapoints.indexOf(user) + 1] >= 10) {
-					clearInterval(triviatime);
-					this.say( room, '/wall **Congratulations** to **' + by + '** for winning the game of Pokemon Trivia!');
-					this.say(room,'/wall You have been awarded with 5 Points and your scores have been recorded. You can check your score in next Bot Update');
-					triviaSign = false;
+				triviaPoints[triviaPoints.indexOf(user) + 1] = triviaPoints[triviaPoints.indexOf(user) + 1] + 1;
+				if (triviaPoints[triviaPoints.indexOf(user) + 1] >= 10) {
+					clearInterval(triviaTimer);
+					this.say( room, '/wall Congrats to ' + by + ' for winning!');
+					this.say(room,'/pm ' + by + ' ,**Congratulations** on winning the game of Pokemon trivia. You have been awarded **2 Points** for your performance, you can view your points on next update')
+					triviaON = false; 
 					return false;
 				}
-				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer and advances to **' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** points!');
+				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer, and has **' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** points!');
 			} else {
 				triviaA = '';
-				triviapoints[triviapoints.length] = user;
-				triviapoints[triviapoints.length] = 1;
-				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer and advances to **' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** point!');
+				triviaPoints[triviaPoints.length] = user;
+				triviaPoints[triviaPoints.length] = 1;
+				this.say(room, '**' + by.slice(1, by.length) + '** got the right answer, and has ' + triviaPoints[triviaPoints.indexOf(user) + 1] + '** point!');
 			}
 		}
 	},
 	triviaend: function(arg, by, room){
-		if(room !== triviaroom)return false;
-		if(!triviaSign) return false;
+		if(room !== triviaRoom)return false;
+		if(!triviaON) return false;
 		if(!this.hasRank(by, '%@#~'))return false;
 		clearInterval(triviaTimer);
-		this.say(room, 'The game of Pokemon trivia has been ended.');
-		triviaSign = false;
+		this.say(room, 'The game of trivia has been ended.');
+		triviaON = false;
 	},
-};
+
+	
 
 
-//Bot Still under updations. PM 1love 1life for any kind of helps
+//Bot Still under updations. PM 1love 1life for any kind of helps or mail at enriquemiguel1702@gmail.com
 
