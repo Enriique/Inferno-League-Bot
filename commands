@@ -801,6 +801,7 @@ exports.commands = {
 		triviaON = false;
 	},
 
+};
 	
 
 
