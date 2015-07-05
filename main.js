@@ -99,10 +99,11 @@ if (!Object.select) {
 var sys = require('sys');
 global.colors = require('colors');
 
-console.log('-----------------------------------|'.red);
-console.log('|'.red + 'Inferno Bot by 1love 1life.green');
-console.log('-----------------------------------|'.red);
-console.log('');
+console.log ((
+------------------------------------------------------------------------------------------------------------------\n +
+Pokemon Showdown Bot by 1love-1life built on Node.js Version 10.0.0 !!                                            \n +
+------------------------------------------------------------------------------------------------------------------\n
+	).red);
 
 // Config and config.js watching...
 global.fs = require('fs');
