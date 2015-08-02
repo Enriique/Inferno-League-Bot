@@ -99,11 +99,10 @@ if (!Object.select) {
 var sys = require('sys');
 global.colors = require('colors');
 
-console.log ((
-------------------------------------------------------------------------------------------------------------------\n +
-Pokemon Showdown Bot by 1love-1life built on Node.js Version 10.0.0 !!                                            \n +
-------------------------------------------------------------------------------------------------------------------\n
-	).red);
+console.log('--------------------------------------------------------|'.red);
+console.log('|'.red + ' Pokemon Showdown Bot'.green + ' on NodeJS'.red);
+console.log('--------------------------------------------------------|'.red);
+console.log('');
 
 // Config and config.js watching...
 global.fs = require('fs');
